@@ -12,11 +12,13 @@
 ////            echo $email;
 //        }
         
+        $errors = array();
         if(strlen($_POST['lastname']) > 1) {
             $lastname = $_POST['lastname'];
             $lastname = mysqli_real_escape_string($connect, $lastname);
 //            $password = md5($password);
 //            echo $password;
+            //do array_push($errors, $someErrorMessage) ... etc
         }
 		
         if(strlen($_POST['studentnum']) > 1) {
@@ -26,7 +28,7 @@
 //            echo $password;
         }
         
-        if ($errors < 1) {
+        if (count($errors) < 1) {
            $query = "
                    SELECT *
                    FROM users WHERE 
@@ -156,7 +158,7 @@ include_once('includes/head.php');
 					<div class="col-md-12">
 						<h2>Sign Up</h2>
 
-						<form method="post" action="<?php echo $_SERVER[" PHP_SELF "]; ?>">
+						<form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 							<fieldset>
 								<div class="row">
 									<div class="form-group col-sm-8 col-sm-offset-2">

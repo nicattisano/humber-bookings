@@ -26,32 +26,58 @@ if (isset($_POST['book'])) {
 	
 	
 	$query = 'SELECT * from bookings WHERE rooms_id = "' . $_GET['room'] . '" AND date = 
-	' . $_GET['year'] . '-'. 
+	"' . $_GET['year'] . '-'. 
 		$_GET['month'] . '-' . 
-		$_GET['day'].' AND starttime <= "'.$checkout.'" AND endtime > "'.$checkin.'" ' ;
+		$_GET['day'] . '"';
+    
+    
+//	$query = 'SELECT * from bookings WHERE rooms_id = "' . $_GET['room'] . '" AND date = 
+//	' . $_GET['year'] . '-'. 
+//		$_GET['month'] . '-' . 
+//		$_GET['day'].' AND starttime <= "'.$checkout.'" AND endtime > "'.$checkin.'" ' ;
 //	
-	echo '<br>'.$query.'<br>';
+	//echo '<br>'.$query.'<br>';
 //	die();
-	
-	
-	$result = mysqli_query($connect, $query) or 	die(mysqli_error($connect));
-                $row = mysqli_fetch_assoc($result);
-	
-            if(mysqli_num_rows($query) > 0) {
+//    echo("\$query==$query");
+   
+	$result = mysqli_query($connect, $query) or die(mysqli_error($connect));
+       //var_dump($result);        
+     //die("...");
 
+
+            $conflicts = array();
+	
+            if($result->num_rows > 0) {
+                $someMSG = "";
+                while($row = $result->fetch_assoc()) {
+                    
+                    //what are the possible kinds of time conflict?
+                    //oldBookine, is the row
+                    //newPotentialBooking (npb) is the thing we want to check
+                    //if npb starts before row, but ends somttime after row starts
+                    //if npb starts after row stars, but ends before row ends
+                    
+                    //circumstance A - where npb starts before row, adn ends after row starts
+                    if ($row['starttime'] == 8) {
+                       //ok lets try this
+                        echo 'yes';
+                        array_push($conflicts, $row);
+                    }
+                   
+                    //circumstance B- where npb starts after row start, adn ends before row end
+                    //circumstance C - where npb starts after row start, adn ends after row ends
+                    
+                }
                 
-//                header('Location: theday.php?room='.$room.'&day='.$day.'&month='.$month.'&year='.$year);
-				
-				echo 'TAKEN';
-				$conflict = true;
-				echo $conflict;
                 
-            }else {
-				
-				$conflict = false;
-				echo $conflict;
-				
-				$query = "
+            }
+            if (count($conflicts) > 0) {
+                //conflict message
+//                var_dump($conflicts);
+//                echo 'Conflict';
+            } else {
+                //insert
+                $query = "
 					INSERT INTO 
 					bookings 
 					(date, starttime, endtime, rooms_id, name, email, num) 
@@ -68,13 +94,6 @@ if (isset($_POST['book'])) {
 
 				$result = mysqli_query($connect, $query) or die(mysqli_error($connect));
 
-					
-				
-				if($result) {
-//										mysqli_insert_id($result);
-//					$conflict = false;
-					header("Location: confirmation.php");
-				}
             }
 			
 		}
